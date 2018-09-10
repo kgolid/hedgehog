@@ -1,10 +1,10 @@
 let sketch = function(p) {
-  let width = 1000;
-  let height = 1000;
-  let offset = -100;
+  let width = 1200;
+  let height = 1200;
+  let offset = -200;
   let circular_shape = true;
 
-  let flow_cell_size = 5;
+  let flow_cell_size = 10;
   let number_of_layers = 1;
 
   let vertical_partitions = 1;
@@ -13,7 +13,7 @@ let sketch = function(p) {
   let vertical_shift = 200;
   let horizontal_shift = 40;
 
-  let noise_size = 0.0015;
+  let noise_size = 0.0025;
   let noise_radius = 0.008;
 
   let flow_width = (width + offset * 2) / flow_cell_size;
@@ -27,16 +27,16 @@ let sketch = function(p) {
     p.smooth();
     p.noLoop();
 
-    p.stroke(255, 90);
+    p.stroke(255, 85);
     p.strokeWeight(1);
   };
   p.draw = function() {
     p.background('#222');
     p.translate(-offset, -offset);
 
+    noise_offset_x = p.random(10);
+    noise_offset_y = p.random(10);
     for (var i = 0; i < number_of_layers; i++) {
-      noise_offset_x = p.random(10);
-      noise_offset_y = p.random(10);
       init_flow();
       display_flow(i);
     }
@@ -59,11 +59,15 @@ let sketch = function(p) {
     }
   }
 
-  function calculate_flow(x, y, r) {
+  function calculate_flow(lll, aaa, r) {
+    let x = p.random(flow_width) * noise_size;
+    let y = p.random(flow_height) * noise_size;
     let mean_arrow = p.createVector(0, 0);
-    let radial_samples = 38;
+    let radial_samples = 70;
+
     for (var i = 0; i < radial_samples; i++) {
-      let angle = p.random(p.PI);
+      //let angle = p.random(p.PI);
+      let angle = (i * p.PI) / radial_samples;
       let pos1 = p.createVector(x + p.cos(angle) * r, y + p.sin(angle) * r);
       let pos2 = p.createVector(x + p.cos(angle + p.PI) * r, y + p.sin(angle + p.PI) * r);
 
@@ -78,20 +82,21 @@ let sketch = function(p) {
     }
     mean_arrow.div(radial_samples);
     mean_arrow.rotate(p.PI / 2);
-    return mean_arrow;
+    return { arrow: mean_arrow, pos: [x, y] };
   }
 
   function display_flow(col) {
+    console.log(flow_width, flow_height);
     for (let i = 0; i < flow_grid.length; i++) {
       for (let j = 0; j < flow_grid[i].length; j++) {
-        if (!circular_shape || inside_radius(i - flow_grid.length / 2, j - flow_grid[i].length / 2, 75)) {
-          p.line(
-            j * flow_cell_size,
-            i * flow_cell_size,
-            j * flow_cell_size + flow_grid[i][j].x * flow_cell_size * 2500,
-            i * flow_cell_size + flow_grid[i][j].y * flow_cell_size * 2500
-          );
-        }
+        //if (!circular_shape || inside_radius(i - flow_grid.length / 2, j - flow_grid[i].length / 2, 35)) {
+        p.line(
+          (flow_grid[i][j].pos[0] * flow_cell_size) / noise_size,
+          (flow_grid[i][j].pos[1] * flow_cell_size) / noise_size,
+          (flow_grid[i][j].pos[0] * flow_cell_size) / noise_size + flow_grid[i][j].arrow.x * flow_cell_size * 2400,
+          (flow_grid[i][j].pos[1] * flow_cell_size) / noise_size + flow_grid[i][j].arrow.y * flow_cell_size * 2400
+        );
+        //}
       }
     }
   }
