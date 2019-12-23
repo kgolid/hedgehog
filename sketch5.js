@@ -1,7 +1,9 @@
+// Grid-like pipe pattern
+
 let sketch = function(p) {
-  let width = 1200;
-  let height = 1200;
-  let offset = -100;
+  let width = 1000;
+  let height = 1000;
+  let offset = -200;
   let circular_shape = false;
 
   let flow_cell_size = 2;
@@ -13,7 +15,7 @@ let sketch = function(p) {
   let vertical_shift = 200;
   let horizontal_shift = 400;
 
-  let noise_size = 0.01;
+  let noise_size = 0.012;
   let noise_radius = 0.01;
 
   let flow_width = (width + offset * 2) / flow_cell_size;
@@ -49,8 +51,10 @@ let sketch = function(p) {
       for (let j = 0; j < flow_width; j++) {
         row.push(
           calculate_flow(
-            (j + vertical_shift * p.floor((vertical_partitions * j) / flow_height)) * noise_size,
-            (i + horizontal_shift * p.floor((horizontal_partitions * i) / flow_width)) * noise_size,
+            (j + vertical_shift * p.floor((vertical_partitions * j) / flow_height)) *
+              noise_size,
+            (i + horizontal_shift * p.floor((horizontal_partitions * i) / flow_width)) *
+              noise_size,
             noise_radius
           )
         );
@@ -61,7 +65,7 @@ let sketch = function(p) {
 
   function calculate_flow(x, y, r) {
     let mean_arrow = p.createVector(0, 0);
-    let radial_samples = 8;
+    let radial_samples = 15;
     for (var i = 0; i < radial_samples; i++) {
       let angle = p.random(p.PI);
       let pos1 = p.createVector(x + p.cos(angle) * r, y + p.sin(angle) * r);
@@ -85,9 +89,13 @@ let sketch = function(p) {
     for (let i = 0; i < flow_grid.length; i++) {
       for (let j = 0; j < flow_grid[i].length; j++) {
         if (
-          flow_grid[i][j].mag() > 0.004 &&
+          flow_grid[i][j].mag() > 0.002 &&
           (!circular_shape ||
-            inside_radius(i - flow_grid.length / 2, j - flow_grid[i].length / 2, 450 / flow_cell_size))
+            inside_radius(
+              i - flow_grid.length / 2,
+              j - flow_grid[i].length / 2,
+              450 / flow_cell_size
+            ))
         ) {
           p.line(
             j * flow_cell_size,

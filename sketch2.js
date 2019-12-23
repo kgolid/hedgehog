@@ -4,17 +4,17 @@ let sketch = function(p) {
   let offset = -100;
   let circular_shape = true;
 
-  let flow_cell_size = 5;
+  let flow_cell_size = 3;
   let number_of_layers = 1;
 
   let vertical_partitions = 1;
   let horizontal_partitions = 1;
 
   let vertical_shift = 200;
-  let horizontal_shift = 40;
+  let horizontal_shift = 400;
 
-  let noise_size = 0.0015;
-  let noise_radius = 0.008;
+  let noise_size = 0.0008;
+  let noise_radius = 0.01;
 
   let flow_width = (width + offset * 2) / flow_cell_size;
   let flow_height = (height + offset * 2) / flow_cell_size;
@@ -27,7 +27,7 @@ let sketch = function(p) {
     p.smooth();
     p.noLoop();
 
-    p.stroke(255, 90);
+    p.stroke(255, 40);
     p.strokeWeight(1);
   };
   p.draw = function() {
@@ -49,8 +49,10 @@ let sketch = function(p) {
       for (let j = 0; j < flow_width; j++) {
         row.push(
           calculate_flow(
-            (j + vertical_shift * p.floor((vertical_partitions * j) / flow_height)) * noise_size,
-            (i + horizontal_shift * p.floor((horizontal_partitions * i) / flow_width)) * noise_size,
+            (j + vertical_shift * p.floor((vertical_partitions * j) / flow_height)) *
+              noise_size,
+            (i + horizontal_shift * p.floor((horizontal_partitions * i) / flow_width)) *
+              noise_size,
             noise_radius
           )
         );
@@ -61,7 +63,7 @@ let sketch = function(p) {
 
   function calculate_flow(x, y, r) {
     let mean_arrow = p.createVector(0, 0);
-    let radial_samples = 38;
+    let radial_samples = 3;
     for (var i = 0; i < radial_samples; i++) {
       let angle = p.random(p.PI);
       let pos1 = p.createVector(x + p.cos(angle) * r, y + p.sin(angle) * r);
@@ -84,7 +86,14 @@ let sketch = function(p) {
   function display_flow(col) {
     for (let i = 0; i < flow_grid.length; i++) {
       for (let j = 0; j < flow_grid[i].length; j++) {
-        if (!circular_shape || inside_radius(i - flow_grid.length / 2, j - flow_grid[i].length / 2, 75)) {
+        if (
+          !circular_shape ||
+          inside_radius(
+            i - flow_grid.length / 2,
+            j - flow_grid[i].length / 2,
+            400 / flow_cell_size
+          )
+        ) {
           p.line(
             j * flow_cell_size,
             i * flow_cell_size,
